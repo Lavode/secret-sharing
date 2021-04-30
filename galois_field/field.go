@@ -1,3 +1,6 @@
+// Package galois_field implements operations over finite fields *of prime
+// order*. As such only a subset of fields is supported, each corresponding to
+// the ring of integers modulo p.
 package galois_field
 
 import (
@@ -5,12 +8,12 @@ import (
 	"math/big"
 )
 
-// Implementation of a finite field *of prime order*. As such only a subset of
-// finite fields is supported, corresponding to the ring of integers modulo p.
+// Finite field of prime order
 type GF struct {
 	P *big.Int
 }
 
+// Addition in the finite field `gf`.
 func (gf *GF) Add(a *big.Int, b *big.Int) *big.Int {
 	var sum = &big.Int{}
 	sum.Add(a, b)
@@ -19,6 +22,7 @@ func (gf *GF) Add(a *big.Int, b *big.Int) *big.Int {
 	return sum
 }
 
+// Multiplication in the finite field `gf`.
 func (gf *GF) Mul(a *big.Int, b *big.Int) *big.Int {
 	var prod = &big.Int{}
 	prod.Mul(a, b)
@@ -27,6 +31,7 @@ func (gf *GF) Mul(a *big.Int, b *big.Int) *big.Int {
 	return prod
 }
 
+// Get a random rember of the finite field `gf`.
 func (gf *GF) Rand() (*big.Int, error) {
 	return rand.Int(rand.Reader, gf.P)
 }
