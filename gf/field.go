@@ -60,6 +60,13 @@ func (gf *GF) Exp(b *big.Int, e *big.Int) *big.Int {
 	return pow
 }
 
+func (gf *GF) MultInverse(a *big.Int) *big.Int {
+	var inv = &big.Int{}
+	inv.ModInverse(a, gf.P)
+
+	return inv
+}
+
 // Get a random rember of the finite field `gf`.
 func (gf *GF) Rand() (*big.Int, error) {
 	return rand.Int(rand.Reader, gf.P)

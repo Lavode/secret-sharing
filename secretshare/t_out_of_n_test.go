@@ -50,3 +50,51 @@ func TestTOutOfN(t *testing.T) {
 		t.Errorf("Expected error if secret not a group element; got none")
 	}
 }
+
+func TestTOutOfNRecover(t *testing.T) {
+	field := gf.GF{P: big.NewInt(53)}
+	secret := big.NewInt(42)
+
+	shares := []Share{
+		{1, big.NewInt(37)},
+		{2, big.NewInt(48)},
+		{5, big.NewInt(18)},
+	}
+	actual, err := TOutOfNRecover(shares, field)
+	if err != nil {
+		t.Fatalf("Error while recovering secret: %v", err)
+	}
+	if actual.Cmp(secret) != 0 {
+		t.Errorf("Expected to recover %d; got %d", secret, actual)
+	}
+
+	shares = []Share{
+		{1, big.NewInt(37)},
+		{3, big.NewInt(22)},
+		{4, big.NewInt(12)},
+	}
+	actual, err = TOutOfNRecover(shares, field)
+	if err != nil {
+		t.Fatalf("Error while recovering secret: %v", err)
+	}
+	if actual.Cmp(secret) != 0 {
+		t.Errorf("Expected to recover %d; got %d", secret, actual)
+	}
+
+	field = gf.GF{P: big.NewInt(127)}
+	secret = big.NewInt(86)
+	shares = []Share{
+		{1, big.NewInt(30)},
+		{3, big.NewInt(101)},
+		{5, big.NewInt(109)},
+		{6, big.NewInt(35)},
+		{9, big.NewInt(86)},
+	}
+	actual, err = TOutOfNRecover(shares, field)
+	if err != nil {
+		t.Fatalf("Error while recovering secret: %v", err)
+	}
+	if actual.Cmp(secret) != 0 {
+		t.Errorf("Expected to recover %d; got %d", secret, actual)
+	}
+}

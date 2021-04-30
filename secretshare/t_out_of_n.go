@@ -59,3 +59,29 @@ func TOutOfN(secret *big.Int, t int, n int, field gf.GF) ([]Share, gf.Polynomial
 
 	return shares, pol, nil
 }
+
+// Recover the secret from t out of n shares.
+//
+// The slice of shares must be *exactly* `t` *unique* shares. If there are any
+// more or less, an incorrect value will be reconstructed.
+//
+// Returns an error if shares are not unique.
+func TOutOfNRecover(shares []Share, field gf.GF) (*big.Int, error) {
+	// TODO error handling
+	var sum = &big.Int{}
+
+	xs := make([]*big.Int, len(shares))
+	for i, share := range shares {
+		xs[i] = big.NewInt(int64(share.Id))
+	}
+
+	for j := 0; j < len(shares); j += 1 {
+		var term = &big.Int{}
+		term.Set(shares[j].Value)                   // y_i
+		basePoly := gf.BasePolynomial(j, xs, field) // l_j(0)
+		term = field.Mul(term, basePoly)            // y_i * l_j(0)
+		sum = field.Add(sum, term)
+	}
+
+	return sum, nil
+}

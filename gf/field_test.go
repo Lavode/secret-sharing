@@ -93,6 +93,27 @@ func TestDiv(t *testing.T) {
 	}
 }
 
+func TestMultInverse(t *testing.T) {
+	gf := GF{P: big.NewInt(17)}
+
+	checks := []struct {
+		a   int64
+		inv int64
+	}{
+		{12, 10},
+		{4, 13},
+		{9, 2},
+		{152, 16},
+	}
+
+	for _, check := range checks {
+		actual := gf.MultInverse(big.NewInt(check.a))
+		if actual.Cmp(big.NewInt(check.inv)) != 0 {
+			t.Errorf("%d^-1 = %d^-1 mod %d; got %d", check.a, check.inv, gf.P, actual)
+		}
+	}
+}
+
 func TestExp(t *testing.T) {
 	gf := GF{P: big.NewInt(17)}
 
