@@ -51,7 +51,7 @@ func TestMul(t *testing.T) {
 
 func TestRand(t *testing.T) {
 	gf := GF{P: big.NewInt(17)}
-	min := big.NewInt(0)
+	zero := big.NewInt(0)
 
 	// It's probabilistic, but hey
 	for i := 0; i < 10; i += 1 {
@@ -61,8 +61,29 @@ func TestRand(t *testing.T) {
 			t.Errorf("Rand() returned error: %v", err)
 		}
 
-		if rnd.Cmp(min) == -1 || rnd.Cmp(gf.P) != -1 {
+		if rnd.Cmp(zero) == -1 || rnd.Cmp(gf.P) != -1 {
 			t.Errorf("Rand() = %d; Not valid for GF(%d)", rnd, gf.P)
+		}
+	}
+}
+
+func TestRandPolyonmial(t *testing.T) {
+	gf := GF{P: big.NewInt(17)}
+	zero := big.NewInt(0)
+
+	poly, err := gf.RandomPolynomial(3)
+
+	if err != nil {
+		t.Errorf("Polynomial generation failed: %v", err)
+	}
+
+	if len(poly.Coefficients) != 4 {
+		t.Errorf("Expected polynomial of degree 3 to have 4  coefficients; got %d", len(poly.Coefficients))
+	}
+
+	for _, coef := range poly.Coefficients {
+		if coef.Cmp(zero) == -1 || coef.Cmp(gf.P) != -1 {
+			t.Errorf("Polynomial had coefficient which is not a group element: %d", coef)
 		}
 	}
 }

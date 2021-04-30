@@ -35,3 +35,18 @@ func (gf *GF) Mul(a *big.Int, b *big.Int) *big.Int {
 func (gf *GF) Rand() (*big.Int, error) {
 	return rand.Int(rand.Reader, gf.P)
 }
+
+func (gf *GF) RandomPolynomial(degree int) (Polynomial, error) {
+	poly := NewPolynomial(degree, *gf)
+
+	for i := 0; i < degree+1; i += 1 {
+		rnd, err := gf.Rand()
+		if err != nil {
+			return poly, err
+		}
+
+		poly.Coefficients[i] = rnd
+	}
+
+	return poly, nil
+}
