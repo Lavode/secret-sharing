@@ -1,4 +1,4 @@
-package galois_field
+package gf
 
 import (
 	"math/big"

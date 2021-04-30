@@ -1,7 +1,7 @@
-// Package galois_field implements operations over finite fields *of prime
-// order*. As such only a subset of fields is supported, each corresponding to
-// the ring of integers modulo p.
-package galois_field
+// Package gf implements operations over finite fields *of prime order*. As
+// such only a subset of fields is supported, each corresponding to the ring of
+// integers modulo p.
+package gf
 
 import (
 	"crypto/rand"
