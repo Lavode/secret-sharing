@@ -16,11 +16,16 @@ type Polynomial struct {
 }
 
 // Initialize a new polynomial of given degreen in given field.
-func NewPolynomial(degree int, field GF) Polynomial {
+func NewPolynomial(degree int, field GF) (Polynomial, error) {
 	poly := Polynomial{Field: field}
+
+	if degree < 0 {
+		return poly, fmt.Errorf("Degree must be positive")
+	}
+
 	poly.Coefficients = make([]*big.Int, degree+1)
 
-	return poly
+	return poly, nil
 }
 
 // Return the degree of the polynomial
@@ -29,8 +34,14 @@ func (pol *Polynomial) Degree() int {
 }
 
 // Evaluate the polynomial at a given point
-func (pol *Polynomial) Evaluate(x *big.Int) *big.Int {
+//
+// Returns an error if the provided value is not a valid group element.
+func (pol *Polynomial) Evaluate(x *big.Int) (*big.Int, error) {
 	var result = &big.Int{}
+
+	if !pol.Field.IsGroupElement(x) {
+		return result, fmt.Errorf("%d is not a valid group element", x)
+	}
 
 	// Coefficient a_i at index i corresponds to a_i * x^i
 	for exp, coef := range pol.Coefficients {
@@ -46,7 +57,7 @@ func (pol *Polynomial) Evaluate(x *big.Int) *big.Int {
 
 	result.Mod(result, pol.Field.P)
 
-	return result
+	return result, nil
 }
 
 // Return a string representation of this polynomial for printing purposes.

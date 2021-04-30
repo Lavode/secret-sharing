@@ -87,3 +87,21 @@ func TestRandPolyonmial(t *testing.T) {
 		}
 	}
 }
+
+func TestIsGroupElement(t *testing.T) {
+	gf := GF{P: big.NewInt(17)}
+
+	valid := []int64{0, 2, 11, 16}
+	for _, x := range valid {
+		if !gf.IsGroupElement(big.NewInt(x)) {
+			t.Errorf("Expected %d to be group element; was not", x)
+		}
+	}
+
+	invalid := []int64{-3, 17, 256}
+	for _, x := range invalid {
+		if gf.IsGroupElement(big.NewInt(x)) {
+			t.Errorf("Expected %d to not be group element; but was", x)
+		}
+	}
+}

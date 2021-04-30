@@ -36,8 +36,13 @@ func (gf *GF) Rand() (*big.Int, error) {
 	return rand.Int(rand.Reader, gf.P)
 }
 
+// Get a random polynomial over the finite field `gf`.
 func (gf *GF) RandomPolynomial(degree int) (Polynomial, error) {
-	poly := NewPolynomial(degree, *gf)
+	poly, err := NewPolynomial(degree, *gf)
+
+	if err != nil {
+		return poly, err
+	}
 
 	for i := 0; i < degree+1; i += 1 {
 		rnd, err := gf.Rand()
@@ -49,4 +54,19 @@ func (gf *GF) RandomPolynomial(degree int) (Polynomial, error) {
 	}
 
 	return poly, nil
+}
+
+// Check if an element is an element of group `gf`.
+func (gf *GF) IsGroupElement(x *big.Int) bool {
+	// x < 0
+	if x.Cmp(big.NewInt(0)) == -1 {
+		return false
+	}
+
+	// x >= p
+	if x.Cmp(gf.P) != -1 {
+		return false
+	}
+
+	return true
 }

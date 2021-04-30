@@ -7,16 +7,26 @@ import (
 
 func TestNewPolynomial(t *testing.T) {
 	gf := GF{P: big.NewInt(17)}
-	poly := NewPolynomial(3, gf)
+	poly, err := NewPolynomial(3, gf)
+
+	if err != nil {
+		t.Errorf("Expected no error; got '%s'", err)
+	}
 
 	if len(poly.Coefficients) != 4 {
 		t.Errorf("Expected polynomial of degree 3 to have 4 coefficients; got %d", len(poly.Coefficients))
+	}
+
+	// Negative degre
+	poly, err = NewPolynomial(-2, gf)
+	if err == nil {
+		t.Error("Expected error, got none")
 	}
 }
 
 func TestDegree(t *testing.T) {
 	gf := GF{P: big.NewInt(17)}
-	poly := NewPolynomial(11, gf)
+	poly, _ := NewPolynomial(11, gf)
 
 	if poly.Degree() != 11 {
 		t.Errorf("Expected polynomial to have degree 11; got %d", poly.Degree())
@@ -26,7 +36,7 @@ func TestDegree(t *testing.T) {
 func TestEvaluate(t *testing.T) {
 	gf := GF{P: big.NewInt(17)}
 	// p(x) = 15 x^2 + 8x + 3
-	poly := NewPolynomial(2, gf)
+	poly, _ := NewPolynomial(2, gf)
 	poly.Coefficients[0] = big.NewInt(3)
 	poly.Coefficients[1] = big.NewInt(8)
 	poly.Coefficients[2] = big.NewInt(15)
@@ -46,26 +56,31 @@ func TestEvaluate(t *testing.T) {
 	}
 
 	for _, check := range checks {
-		actual := poly.Evaluate(big.NewInt(check.x))
+		actual, _ := poly.Evaluate(big.NewInt(check.x))
 		if actual.Cmp(big.NewInt(check.y)) != 0 {
 			t.Errorf("Expected p(%d) = %d; got %d", check.x, check.y, actual)
 		}
 	}
 
-	poly = NewPolynomial(0, gf)
+	poly, _ = NewPolynomial(0, gf)
 	poly.Coefficients[0] = big.NewInt(12)
 	t.Log("p(x) = 12")
 
-	actual := poly.Evaluate(big.NewInt(10))
+	actual, _ := poly.Evaluate(big.NewInt(10))
 	if actual.Cmp(big.NewInt(12)) != 0 {
 		t.Errorf("Expected p(%d) = %d; got %d", 10, 12, actual)
+	}
+
+	actual, err := poly.Evaluate(big.NewInt(20))
+	if err == nil {
+		t.Error("Expected error, got none")
 	}
 }
 
 func TestString(t *testing.T) {
 	gf := GF{P: big.NewInt(17)}
 	// p(x) = 15 x^2 + 8x + 3
-	poly := NewPolynomial(2, gf)
+	poly, _ := NewPolynomial(2, gf)
 	poly.Coefficients[0] = big.NewInt(3)
 	poly.Coefficients[1] = big.NewInt(8)
 	poly.Coefficients[2] = big.NewInt(15)
@@ -75,7 +90,7 @@ func TestString(t *testing.T) {
 		t.Errorf("Expected string representation '%s'; Got '%s'", expected, poly.String())
 	}
 
-	poly = NewPolynomial(0, gf)
+	poly, _ = NewPolynomial(0, gf)
 	poly.Coefficients[0] = big.NewInt(12)
 	expected = "p(x) = 12"
 	if poly.String() != expected {
