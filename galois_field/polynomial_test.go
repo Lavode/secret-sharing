@@ -54,7 +54,7 @@ func TestEvaluate(t *testing.T) {
 
 	poly = NewPolynomial(0, gf)
 	poly.Coefficients[0] = big.NewInt(12)
-	t.Log("p(x) = 15 x^2 + 8x + 3")
+	t.Log("p(x) = 12")
 
 	actual := poly.Evaluate(big.NewInt(10))
 	if actual.Cmp(big.NewInt(12)) != 0 {

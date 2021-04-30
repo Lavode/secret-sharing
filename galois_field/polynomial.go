@@ -49,6 +49,7 @@ func (pol *Polynomial) Evaluate(x *big.Int) *big.Int {
 	return result
 }
 
+// Return a string representation of this polynomial for printing purposes.
 func (pol *Polynomial) String() string {
 	var b strings.Builder
 
