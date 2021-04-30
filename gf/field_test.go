@@ -27,13 +27,35 @@ func TestAdd(t *testing.T) {
 	}
 }
 
+func TestSub(t *testing.T) {
+	gf := GF{P: big.NewInt(17)}
+
+	checks := []struct {
+		a    int64
+		b    int64
+		diff int64
+	}{
+		{3, 12, 8},
+		{1, 4, 14},
+		{16, 4, 12},
+		{123, 623, 10},
+	}
+
+	for _, check := range checks {
+		actual := gf.Sub(big.NewInt(check.a), big.NewInt(check.b))
+		if actual.Cmp(big.NewInt(check.diff)) != 0 {
+			t.Errorf("Expected %d - %d mod %d = %d; got %d", check.a, check.b, gf.P, check.diff, actual)
+		}
+	}
+}
+
 func TestMul(t *testing.T) {
 	gf := GF{P: big.NewInt(17)}
 
 	checks := []struct {
-		a   int64
-		b   int64
-		sum int64
+		a    int64
+		b    int64
+		prod int64
 	}{
 		{1, 12, 12},
 		{5, 4, 3},
@@ -43,8 +65,52 @@ func TestMul(t *testing.T) {
 
 	for _, check := range checks {
 		actual := gf.Mul(big.NewInt(check.a), big.NewInt(check.b))
-		if actual.Cmp(big.NewInt(check.sum)) != 0 {
-			t.Errorf("%d * %d mod %d = %d; got %d", check.a, check.b, gf.P, check.sum, actual)
+		if actual.Cmp(big.NewInt(check.prod)) != 0 {
+			t.Errorf("%d * %d mod %d = %d; got %d", check.a, check.b, gf.P, check.prod, actual)
+		}
+	}
+}
+
+func TestDiv(t *testing.T) {
+	gf := GF{P: big.NewInt(17)}
+
+	checks := []struct {
+		a    int64
+		b    int64
+		quot int64
+	}{
+		{1, 12, 12},
+		{5, 4, 3},
+		{12, 9, 6},
+		{210, 152, 11},
+	}
+
+	for _, check := range checks {
+		actual := gf.Div(big.NewInt(check.a), big.NewInt(check.b))
+		if actual.Cmp(big.NewInt(check.quot)) != 0 {
+			t.Errorf("%d / %d mod %d = %d; got %d", check.a, check.b, gf.P, check.quot, actual)
+		}
+	}
+}
+
+func TestExp(t *testing.T) {
+	gf := GF{P: big.NewInt(17)}
+
+	checks := []struct {
+		a   int64
+		b   int64
+		pow int64
+	}{
+		{1, 12, 1},
+		{5, 4, 13},
+		{12, 9, 5},
+		{210, 152, 16},
+	}
+
+	for _, check := range checks {
+		actual := gf.Exp(big.NewInt(check.a), big.NewInt(check.b))
+		if actual.Cmp(big.NewInt(check.pow)) != 0 {
+			t.Errorf("%d^%d mod %d = %d; got %d", check.a, check.b, gf.P, check.pow, actual)
 		}
 	}
 }

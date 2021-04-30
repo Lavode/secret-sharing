@@ -47,15 +47,11 @@ func (pol *Polynomial) Evaluate(x *big.Int) (*big.Int, error) {
 	for exp, coef := range pol.Coefficients {
 		// We'll utilize modular exponentiation for each term of the
 		// sum, to prevent having potentially huge intermediary values
-		var term = &big.Int{}
-		term.Set(x)                                         // x
-		term.Exp(term, big.NewInt(int64(exp)), pol.Field.P) // x^i
-		term.Mul(term, coef)                                // a_i * x^i
+		term := pol.Field.Exp(x, big.NewInt(int64(exp))) // x^i
+		term = pol.Field.Mul(term, coef)                 // a_i * x^i
 
-		result.Add(result, term) // a_0 + a_1 * x + ... + a_n * x^n
+		result = pol.Field.Add(result, term) // a_0 + a_1 * x + ... + a_n * x^n
 	}
-
-	result.Mod(result, pol.Field.P)
 
 	return result, nil
 }
