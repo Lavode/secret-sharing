@@ -9,10 +9,10 @@ import (
 func TestTOutOfN(t *testing.T) {
 	field := gf.GF{P: big.NewInt(53)}
 	secret := big.NewInt(42)
-	t_ := 3
+	tShares := 3
 	n := 5
 
-	shares, pol, err := TOutOfN(secret, t_, n, field)
+	shares, pol, err := TOutOfN(secret, tShares, n, field)
 	if err != nil {
 		t.Fatalf("Error creating t-out-of-n share: %v", err)
 	}
@@ -24,8 +24,15 @@ func TestTOutOfN(t *testing.T) {
 	if len(shares) != 5 {
 		t.Errorf("Expected 5 shares; got %d", len(shares))
 	}
+}
 
-	_, _, err = TOutOfN(secret, 1, n, field)
+func TestTOutOfNInvalidInputs(t *testing.T) {
+	field := gf.GF{P: big.NewInt(53)}
+	secret := big.NewInt(42)
+	tShares := 3
+	n := 5
+
+	_, _, err := TOutOfN(secret, 1, n, field)
 	if err == nil {
 		t.Errorf("Expected error if t <= 1; got none")
 	}
@@ -40,12 +47,12 @@ func TestTOutOfN(t *testing.T) {
 		t.Errorf("Expected error if t not a group element; got none")
 	}
 
-	_, _, err = TOutOfN(secret, t_, 54, field)
+	_, _, err = TOutOfN(secret, tShares, 54, field)
 	if err == nil {
 		t.Errorf("Expected error if n not a group element; got none")
 	}
 
-	_, _, err = TOutOfN(big.NewInt(55), t_, n, field)
+	_, _, err = TOutOfN(big.NewInt(55), tShares, n, field)
 	if err == nil {
 		t.Errorf("Expected error if secret not a group element; got none")
 	}
@@ -96,5 +103,18 @@ func TestTOutOfNRecover(t *testing.T) {
 	}
 	if actual.Cmp(secret) != 0 {
 		t.Errorf("Expected to recover %d; got %d", secret, actual)
+	}
+}
+
+func TestTOutOfNRecoverInvalidInputs(t *testing.T) {
+	field := gf.GF{P: big.NewInt(53)}
+	shares := []Share{
+		{1, big.NewInt(10)},
+		{2, big.NewInt(11)},
+		{1, big.NewInt(12)},
+	}
+	_, err := TOutOfNRecover(shares, field)
+	if err == nil {
+		t.Fatalf("Expected error if duplicate shares given; got none")
 	}
 }

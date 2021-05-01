@@ -6,7 +6,10 @@ import (
 )
 
 func TestNewPolynomial(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 	poly, err := NewPolynomial(3, gf)
 
 	if err != nil {
@@ -25,7 +28,10 @@ func TestNewPolynomial(t *testing.T) {
 }
 
 func TestDegree(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 	poly, _ := NewPolynomial(11, gf)
 
 	if poly.Degree() != 11 {
@@ -34,7 +40,10 @@ func TestDegree(t *testing.T) {
 }
 
 func TestEvaluate(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 	// p(x) = 15 x^2 + 8x + 3
 	poly, _ := NewPolynomial(2, gf)
 	poly.Coefficients[0] = big.NewInt(3)
@@ -71,14 +80,17 @@ func TestEvaluate(t *testing.T) {
 		t.Errorf("Expected p(%d) = %d; got %d", 10, 12, actual)
 	}
 
-	actual, err := poly.Evaluate(big.NewInt(20))
+	actual, err = poly.Evaluate(big.NewInt(20))
 	if err == nil {
 		t.Error("Expected error, got none")
 	}
 }
 
 func TestString(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 	// p(x) = 15 x^2 + 8x + 3
 	poly, _ := NewPolynomial(2, gf)
 	poly.Coefficients[0] = big.NewInt(3)

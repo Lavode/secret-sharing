@@ -6,7 +6,10 @@ import (
 )
 
 func TestBasePolynomial(t *testing.T) {
-	gf := GF{P: big.NewInt(53)}
+	gf, err := NewGF(big.NewInt(53))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 	xs := []*big.Int{
 		big.NewInt(1),
 		big.NewInt(3),

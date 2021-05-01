@@ -5,8 +5,27 @@ import (
 	"testing"
 )
 
+func TestNewGF(t *testing.T) {
+	gf, err := NewGF(big.NewInt(53))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
+	if gf.P.Cmp(big.NewInt(53)) != 0 {
+		t.Errorf("Expected order of 53; got %d", gf.P)
+	}
+
+	_, err = NewGF(big.NewInt(1024))
+	if err == nil {
+		t.Errorf("Expected error when creating field of non-prime order; got none")
+	}
+
+}
+
 func TestAdd(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Fatalf("Error generating finite field: %v", err)
+	}
 
 	checks := []struct {
 		a   int64
@@ -28,7 +47,10 @@ func TestAdd(t *testing.T) {
 }
 
 func TestSub(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Fatalf("Error generating finite field: %v", err)
+	}
 
 	checks := []struct {
 		a    int64
@@ -50,7 +72,10 @@ func TestSub(t *testing.T) {
 }
 
 func TestMul(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 
 	checks := []struct {
 		a    int64
@@ -72,7 +97,10 @@ func TestMul(t *testing.T) {
 }
 
 func TestDiv(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 
 	checks := []struct {
 		a    int64
@@ -94,7 +122,10 @@ func TestDiv(t *testing.T) {
 }
 
 func TestMultInverse(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 
 	checks := []struct {
 		a   int64
@@ -115,7 +146,10 @@ func TestMultInverse(t *testing.T) {
 }
 
 func TestExp(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 
 	checks := []struct {
 		a   int64
@@ -137,11 +171,14 @@ func TestExp(t *testing.T) {
 }
 
 func TestRand(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 	zero := big.NewInt(0)
 
 	// It's probabilistic, but hey
-	for i := 0; i < 10; i += 1 {
+	for i := 0; i < 10; i++ {
 		rnd, err := gf.Rand()
 
 		if err != nil {
@@ -155,7 +192,10 @@ func TestRand(t *testing.T) {
 }
 
 func TestRandPolyonmial(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 	zero := big.NewInt(0)
 
 	poly, err := gf.RandomPolynomial(3)
@@ -173,10 +213,18 @@ func TestRandPolyonmial(t *testing.T) {
 			t.Errorf("Polynomial had coefficient which is not a group element: %d", coef)
 		}
 	}
+
+	_, err = gf.RandomPolynomial(-1)
+	if err == nil {
+		t.Errorf("Expected error when generating polynomial of invalid degree; got none")
+	}
 }
 
 func TestIsGroupElement(t *testing.T) {
-	gf := GF{P: big.NewInt(17)}
+	gf, err := NewGF(big.NewInt(17))
+	if err != nil {
+		t.Errorf("Error while creating new GF of prime order: %v", err)
+	}
 
 	valid := []int64{0, 2, 11, 16}
 	for _, x := range valid {

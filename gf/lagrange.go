@@ -4,7 +4,8 @@ import (
 	"math/big"
 )
 
-// Calculates the Lagrange base polynomial `l_j` *at position 0*, ie `l_j(0)`.
+// BasePolynomial calculates the Lagrange base polynomial `l_j` *at position
+// 0*, ie `l_j(0)`.
 //
 // Recall the general Lagrange base polynomial:
 // `l_j(x) = Product for m = 0 to k, where m != k [ (x - x_m) / (x_j - x_m) ]
@@ -20,7 +21,7 @@ func BasePolynomial(j int, xs []*big.Int, field GF) *big.Int {
 	out := big.NewInt(1)
 	xj := xs[j]
 
-	for i := 0; i < len(xs); i += 1 {
+	for i := 0; i < len(xs); i++ {
 		if i == j {
 			continue
 		}

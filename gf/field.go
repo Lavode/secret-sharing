@@ -5,15 +5,30 @@ package gf
 
 import (
 	"crypto/rand"
+	"fmt"
 	"math/big"
 )
 
-// Finite field of prime order
+// GF implements a finite field of prime order
 type GF struct {
 	P *big.Int
 }
 
-// Addition in the finite field `gf`.
+// NewGF creates a new finite field.
+//
+// Returns an error if the order is not prime.
+func NewGF(order *big.Int) (GF, error) {
+	gf := GF{P: order}
+
+	// False positive probability of at most (1/4)^n
+	if !order.ProbablyPrime(20) {
+		return gf, fmt.Errorf("Field must be of prime order; %d is not", order)
+	}
+
+	return gf, nil
+}
+
+// Add performs addition in the finite field `gf`.
 func (gf *GF) Add(a *big.Int, b *big.Int) *big.Int {
 	var sum = &big.Int{}
 	sum.Add(a, b)      // a + b
@@ -22,7 +37,7 @@ func (gf *GF) Add(a *big.Int, b *big.Int) *big.Int {
 	return sum
 }
 
-// Subtraction in the finite field `gf`.
+// Sub performs subtraction in the finite field `gf`.
 func (gf *GF) Sub(a *big.Int, b *big.Int) *big.Int {
 	var diff = &big.Int{}
 	diff.Sub(a, b)       // a - b
@@ -31,7 +46,7 @@ func (gf *GF) Sub(a *big.Int, b *big.Int) *big.Int {
 	return diff
 }
 
-// Multiplication in the finite field `gf`.
+// Mul performs multiplication in the finite field `gf`.
 func (gf *GF) Mul(a *big.Int, b *big.Int) *big.Int {
 	var prod = &big.Int{}
 	prod.Mul(a, b)       // a * b
@@ -40,7 +55,7 @@ func (gf *GF) Mul(a *big.Int, b *big.Int) *big.Int {
 	return prod
 }
 
-// Division in the finite field `gf`.
+// Div performs division in the finite field `gf`.
 func (gf *GF) Div(a *big.Int, b *big.Int) *big.Int {
 	var quot = &big.Int{}
 	var inv = &big.Int{}
@@ -52,7 +67,7 @@ func (gf *GF) Div(a *big.Int, b *big.Int) *big.Int {
 	return quot
 }
 
-// Exponentiation in the finite field `gf`.
+// Exp performs modular exponentiation in the finite field `gf`.
 func (gf *GF) Exp(b *big.Int, e *big.Int) *big.Int {
 	var pow = &big.Int{}
 	pow.Exp(b, e, gf.P) // b^e mod p
@@ -60,6 +75,8 @@ func (gf *GF) Exp(b *big.Int, e *big.Int) *big.Int {
 	return pow
 }
 
+// MultInverse calculates the modular multiplicative inverse in the finite
+// field `gf`.
 func (gf *GF) MultInverse(a *big.Int) *big.Int {
 	var inv = &big.Int{}
 	inv.ModInverse(a, gf.P)
@@ -67,12 +84,12 @@ func (gf *GF) MultInverse(a *big.Int) *big.Int {
 	return inv
 }
 
-// Get a random rember of the finite field `gf`.
+// Rand returns a random rember of the finite field `gf`.
 func (gf *GF) Rand() (*big.Int, error) {
 	return rand.Int(rand.Reader, gf.P)
 }
 
-// Get a random polynomial over the finite field `gf`.
+// RandomPolynomial returns a random polynomial over the finite field `gf`.
 func (gf *GF) RandomPolynomial(degree int) (Polynomial, error) {
 	poly, err := NewPolynomial(degree, *gf)
 
@@ -80,7 +97,7 @@ func (gf *GF) RandomPolynomial(degree int) (Polynomial, error) {
 		return poly, err
 	}
 
-	for i := 0; i < degree+1; i += 1 {
+	for i := 0; i < degree+1; i++ {
 		rnd, err := gf.Rand()
 		if err != nil {
 			return poly, err
@@ -92,7 +109,7 @@ func (gf *GF) RandomPolynomial(degree int) (Polynomial, error) {
 	return poly, nil
 }
 
-// Check if an element is an element of group `gf`.
+// IsGroupElement checks if a value is an element of group `gf`.
 func (gf *GF) IsGroupElement(x *big.Int) bool {
 	// x < 0
 	if x.Cmp(big.NewInt(0)) == -1 {

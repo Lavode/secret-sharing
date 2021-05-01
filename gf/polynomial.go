@@ -15,7 +15,8 @@ type Polynomial struct {
 	Coefficients []*big.Int
 }
 
-// Initialize a new polynomial of given degreen in given field.
+// NewPolynomial initializes a new polynomial of given degree in the given
+// field.
 func NewPolynomial(degree int, field GF) (Polynomial, error) {
 	poly := Polynomial{Field: field}
 
@@ -28,7 +29,7 @@ func NewPolynomial(degree int, field GF) (Polynomial, error) {
 	return poly, nil
 }
 
-// Return the degree of the polynomial
+// Degree returns the degree of the polynomial
 func (pol *Polynomial) Degree() int {
 	return len(pol.Coefficients) - 1
 }
@@ -61,7 +62,7 @@ func (pol *Polynomial) String() string {
 	var b strings.Builder
 
 	b.WriteString("p(x) = ")
-	for i := pol.Degree(); i >= 0; i -= 1 {
+	for i := pol.Degree(); i >= 0; i-- {
 		if i == 0 {
 			fmt.Fprintf(&b, "%d", pol.Coefficients[i])
 		} else {
