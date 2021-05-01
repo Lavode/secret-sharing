@@ -16,7 +16,7 @@ type Share struct {
 // field GF(p).
 //
 // It is required that:
-// - 1 < t < n
+// - 1 < t <= n
 // - secret, t, n are elements of GF(p)
 //
 // Returns a slice containing the shares and the polynomial used to calculate
@@ -26,7 +26,7 @@ func TOutOfN(secret *big.Int, t int, n int, field gf.GF) ([]Share, gf.Polynomial
 	var pol gf.Polynomial
 	shares := make([]Share, n)
 
-	if t <= 1 || t >= n || !field.IsGroupElement(big.NewInt(int64(t))) {
+	if t <= 1 || t > n || !field.IsGroupElement(big.NewInt(int64(t))) {
 		return shares, pol, fmt.Errorf("Invalid value for t")
 	}
 

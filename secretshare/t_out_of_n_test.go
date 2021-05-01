@@ -9,6 +9,8 @@ import (
 func TestTOutOfN(t *testing.T) {
 	field := gf.GF{P: big.NewInt(53)}
 	secret := big.NewInt(42)
+
+	// 3-out-of-5
 	tShares := 3
 	n := 5
 
@@ -24,6 +26,44 @@ func TestTOutOfN(t *testing.T) {
 	if len(shares) != 5 {
 		t.Errorf("Expected 5 shares; got %d", len(shares))
 	}
+
+	sharesSubset := []Share{
+		shares[0],
+		shares[2],
+		shares[4],
+	}
+	reconstructed, err := TOutOfNRecover(sharesSubset, field)
+	if err != nil {
+		t.Fatalf("Error verifying shares: %v", err)
+	}
+	if secret.Cmp(reconstructed) != 0 {
+		t.Errorf("Reconstructed secret %d does not match %d", reconstructed, secret)
+	}
+
+	// 5-out-of-5
+	tShares = 5
+	n = 5
+
+	shares, pol, err = TOutOfN(secret, tShares, n, field)
+	if err != nil {
+		t.Fatalf("Error creating t-out-of-n share: %v", err)
+	}
+
+	if pol.Degree() != 4 {
+		t.Errorf("Expected polynomial of degree 4; got %d", pol.Degree())
+	}
+
+	if len(shares) != 5 {
+		t.Errorf("Expected 5 shares; got %d", len(shares))
+	}
+
+	reconstructed, err = TOutOfNRecover(shares, field)
+	if err != nil {
+		t.Fatalf("Error verifying shares: %v", err)
+	}
+	if secret.Cmp(reconstructed) != 0 {
+		t.Errorf("Reconstructed secret %d does not match %d", reconstructed, secret)
+	}
 }
 
 func TestTOutOfNInvalidInputs(t *testing.T) {
@@ -37,9 +77,9 @@ func TestTOutOfNInvalidInputs(t *testing.T) {
 		t.Errorf("Expected error if t <= 1; got none")
 	}
 
-	_, _, err = TOutOfN(secret, n, n, field)
+	_, _, err = TOutOfN(secret, n+1, n, field)
 	if err == nil {
-		t.Errorf("Expected error if t >= n; got none")
+		t.Errorf("Expected error if t > n; got none")
 	}
 
 	_, _, err = TOutOfN(secret, 54, n, field)
