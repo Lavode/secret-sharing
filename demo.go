@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	t := 3
+	t := 2
 	n := 5
 	var q = &big.Int{}
 	// 1024 bit prime
@@ -22,7 +22,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("%d-out-of-%d secret sharing of %d produced shares:\n", t, n, secret)
+	fmt.Printf("%d-out-of-%d secret sharing of %d produced shares:\n", t+1, n, secret)
 	for _, share := range shares {
 		fmt.Printf("  Share %d = %d\n", share.ID, share.Value)
 	}
@@ -54,7 +54,7 @@ func share(secret *big.Int, t int, n int, q *big.Int) ([]secretshare.Share, erro
 		return shares, err
 	}
 
-	shares, _, err = secretshare.TOutOfN(secret, t, n, field)
+	shares, _, err = secretshare.TOutOfN(secret, t+1, n, field)
 	return shares, err
 }
 

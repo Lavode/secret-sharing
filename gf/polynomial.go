@@ -34,7 +34,7 @@ func (pol *Polynomial) Degree() int {
 	return len(pol.Coefficients) - 1
 }
 
-// Evaluate the polynomial at a given point
+// Evaluate evaluates the polynomial at a given point
 //
 // Returns an error if the provided value is not a valid group element.
 func (pol *Polynomial) Evaluate(x *big.Int) (*big.Int, error) {
