@@ -58,11 +58,10 @@ func (gf *GF) Mul(a *big.Int, b *big.Int) *big.Int {
 // Div performs division in the finite field `gf`.
 func (gf *GF) Div(a *big.Int, b *big.Int) *big.Int {
 	var quot = &big.Int{}
-	var inv = &big.Int{}
 
-	inv.Mod(b, gf.P)     // b^{-1}
-	quot.Mul(a, inv)     // a * b^{-1}
-	quot.Mod(quot, gf.P) // a * b^{-1} mod p
+	inv := gf.MultInverse(b) // b^{-1}
+	quot.Mul(a, inv)         // a * b^{-1}
+	quot.Mod(quot, gf.P)     // a * b^{-1} mod p
 
 	return quot
 }
